@@ -8,9 +8,9 @@ const Redis = require('ioredis');
 const { rateLimit } = require('express-rate-limit');
 const { RedisStore } = require('rate-limit-redis');
 
-const logger = require('../utils/logger');
-const errorHandler = require('../middleware/errorHandler');
-const routes = require('../routes/identity-service');
+const logger = require('./utils/logger');
+const errorHandler = require('./middleware/errorHandler');
+const routes = require('./routes/identity-service');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
