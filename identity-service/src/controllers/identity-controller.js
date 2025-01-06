@@ -40,7 +40,7 @@ const registerUser = async (req, res) => {
 
     const { accessToken, refreshToken } = await generateTokens(user);
 
-    return res.status(200).json({
+    return res.status(201).json({
       success: true,
       message: 'User registered successfully',
       accessToken,
