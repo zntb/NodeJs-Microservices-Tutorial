@@ -2,6 +2,17 @@ const logger = require('../utils/logger');
 const Post = require('../models/Post');
 const { validateCreatePost } = require('../utils/validation');
 
+async function invalidatePostCache(req, input) {
+  // const cachedKey = `post:${input}`;
+  // await req.redisClient.del(cachedKey);
+
+  const keys = await req.redisClient.keys('posts:*');
+
+  if (keys.length > 0) {
+    await req.redisClient.del(keys);
+  }
+}
+
 const createPost = async (req, res) => {
   logger.info('Create post endpoint hit...');
 
@@ -26,6 +37,7 @@ const createPost = async (req, res) => {
 
     await newPost.save();
     logger.info('Post created successfully', newPost);
+    await invalidatePostCache(req, newPost._id.toString());
 
     res.status(201).json({
       success: true,
