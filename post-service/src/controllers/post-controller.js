@@ -98,6 +98,30 @@ const getPost = async (req, res) => {
   logger.info('Get post endpoint hit...');
 
   try {
+    const postId = req.params.id;
+    const cacheKey = `post:${postId}`;
+    const cachedPost = await req.redisClient.get(cacheKey);
+
+    if (cachedPost) {
+      return res.json(JSON.parse(cachedPost));
+    }
+
+    const singlePostDetailsById = await Post.findById(postId);
+
+    if (!singlePostDetailsById) {
+      return res.status(404).json({
+        message: 'Post not found',
+        success: false,
+      });
+    }
+
+    await req.redisClient.setex(
+      cachedPost,
+      3600,
+      JSON.stringify(singlePostDetailsById),
+    );
+
+    res.json(singlePostDetailsById);
   } catch (error) {
     logger.error('Error fetching post', error);
     res.status(500).json({
