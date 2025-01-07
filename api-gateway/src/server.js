@@ -8,6 +8,7 @@ const { RedisStore } = require('rate-limit-redis');
 const logger = require('./utils/logger');
 const proxy = require('express-http-proxy');
 const errorHandler = require('./middleware/errorHandler');
+const { validateToken } = require('./middleware/authMiddleware');
 
 const app = express();
 const PORT = process.env.PORT || 3000;

@@ -7,6 +7,7 @@ const validateToken = (req, res, next) => {
 
   if (!token) {
     logger.warn('Access attempt without valid token!');
+
     return res.status(401).json({
       message: 'Authentication required',
       success: false,
