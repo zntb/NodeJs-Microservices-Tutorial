@@ -10,7 +10,7 @@ const { RedisStore } = require('rate-limit-redis');
 const errorHandler = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
 const postRoutes = require('./routes/post-routes');
-const { connectRabbitMQ } = require('./utils/rabbitmq');
+const { connectToRabbitMQ, publishEvent } = require('./utils/rabbitmq');
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -59,7 +59,7 @@ app.use((req, res, next) => {
 // sensitive endpoints
 const sensitiveEndpointsLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15, // limit each IP to 15 requests per windowMs
+  max: 50, // limit each IP to 50 requests per windowMs
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   handler: (req, res) => {
@@ -92,7 +92,7 @@ app.use(errorHandler);
 
 async function startServer() {
   try {
-    await connectRabbitMQ();
+    await connectToRabbitMQ();
     app.listen(PORT, () => {
       logger.info(`Post service running on port ${PORT}`);
     });
